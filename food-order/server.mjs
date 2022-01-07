@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import axios from "axios";
 
 mongoose.connect(
-  "mongodb+srv://alexadb:alexa123@cluster0.nr4e4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+  "mongodb+srv://alexadb:alexa123@cluster0.jreid.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 );
 
 const Usage = mongoose.model("Usage", {
@@ -178,7 +178,7 @@ const PlaceOrderIntentHandler = {
     console.log("dishName: ", dishName);
     console.log("qty: ", qty);
 
-    const speakOutput = `You order of ${qty} ${dishName} have been placed. The expected delivery time is usually under an hour`;
+    const speakOutput = `You order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`;
 
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
 
