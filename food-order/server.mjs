@@ -181,6 +181,7 @@ const PlaceOrderIntentHandler = {
     if (!dishName) {
       const speakOutput =
         "I am afraid the item you are ordering is not available in our menu you can ask for menu by saying 'show menu'";
+      return handlerInput.responseBuilder.speak(speakOutput).getResponse();
     } else {
       const speakOutput = `You order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`;
       return handlerInput.responseBuilder.speak(speakOutput).getResponse();
