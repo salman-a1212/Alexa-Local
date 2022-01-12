@@ -183,20 +183,20 @@ const PlaceOrderIntentHandler = {
     const dishName = slots.dish.value;
     const qty = parseInt(slots.qty.value);
 
-    const email = responseArray[0].data;
-    const name = responseArray[1].data;
+    // const email = responseArray[0].data;
+    // const name = responseArray[1].data;
 
     console.log(name, email);
 
     console.log("dishName: ", dishName);
     console.log("qty: ", qty);
 
-    var newOrder = new Cart({
-      clientName: name,
-      clientEmail: email,
-      dishName: dishName,
-      orderQty: qty,
-    }).save();
+    // var newOrder = new Cart({
+    //   clientName: name,
+    //   clientEmail: email,
+    //   dishName: dishName,
+    //   orderQty: qty,
+    // }).save();
 
     if (!dishName) {
       const speakOutput =
