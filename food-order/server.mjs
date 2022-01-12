@@ -186,7 +186,7 @@ const PlaceOrderIntentHandler = {
     // const email = responseArray[0].data;
     // const name = responseArray[1].data;
 
-    console.log(name, email);
+    // console.log(name, email);
 
     console.log("dishName: ", dishName);
     console.log("qty: ", qty);
