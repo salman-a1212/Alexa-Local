@@ -15,6 +15,14 @@ const Usage = mongoose.model("Usage", {
   createdOn: { type: Date, default: Date.now },
 });
 
+const Cart = mongoose.model("Cart", {
+  clientName: String,
+  clientEmail: String,
+  dishName: String,
+  orderQty: Number,
+  createdOn: { type: Date, default: Date.now },
+});
+
 const app = express();
 app.use(morgan("dev"));
 const PORT = process.env.PORT || 3000;
@@ -175,8 +183,20 @@ const PlaceOrderIntentHandler = {
     const dishName = slots.dish.value;
     const qty = parseInt(slots.qty.value);
 
+    const email = responseArray[0].data;
+    const name = responseArray[1].data;
+
+    console.log(name, email);
+
     console.log("dishName: ", dishName);
     console.log("qty: ", qty);
+
+    var newOrder = new Cart({
+      clientName: name,
+      clientEmail: email,
+      dishName: dishName,
+      orderQty: qty,
+    }).save();
 
     if (!dishName) {
       const speakOutput =
