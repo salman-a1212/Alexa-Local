@@ -19,7 +19,7 @@ const Cart = mongoose.model("Cart", {
   clientName: String,
   clientEmail: String,
   dishName: String,
-  orderQty: Number,
+  qty: Number,
   createdOn: { type: Date, default: Date.now },
 });
 
@@ -183,29 +183,10 @@ const PlaceOrderIntentHandler = {
     const dishName = slots.dish.value;
     const qty = parseInt(slots.qty.value);
 
-    // const email = responseArray[0].data;
-    // const name = responseArray[1].data;
-
     // console.log(name, email);
 
     console.log("dishName: ", dishName);
     console.log("qty: ", qty);
-
-    // var newOrder = new Cart({
-    //   clientName: name,
-    //   clientEmail: email,
-    //   dishName: dishName,
-    //   orderQty: qty,
-    // }).save();
-
-    if (!dishName) {
-      const speakOutput =
-        "I am afraid the item you are ordering is not available in our menu you can ask for menu by saying 'show menu'";
-      return handlerInput.responseBuilder.speak(speakOutput).getResponse();
-    } else {
-      const speakOutput = `You order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`;
-      return handlerInput.responseBuilder.speak(speakOutput).getResponse();
-    }
 
     const { serviceClientFactory, responseBuilder } = handlerInput;
 
@@ -230,6 +211,14 @@ const PlaceOrderIntentHandler = {
 
       const email = responseArray[0].data;
       const name = responseArray[1].data;
+
+      var newOrder = new Cart({
+        clientName: name,
+        clientEmail: email,
+        dishName: dishName,
+        qty: qty,
+      }).save();
+
       console.log("email: ", email);
 
       if (!email) {
@@ -240,7 +229,9 @@ const PlaceOrderIntentHandler = {
           .getResponse();
       }
       return handlerInput.responseBuilder
-        .speak(`Dear ${name}, your email is: ${email}`)
+        .speak(
+          `Dear ${name}, You order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`
+        )
         .getResponse();
     } catch (error) {
       console.log("error code: ", error.response.status);
@@ -248,7 +239,7 @@ const PlaceOrderIntentHandler = {
       if (error.response.status === 403) {
         return responseBuilder
           .speak(
-            "I am Unable to read your email. Please goto Alexa app and then goto Malik Resturant Skill and Grant Profile Permissions to this skill"
+            "I am Unable to read your email. Please goto Alexa app and then goto Kababjee's Resturant Skill and Grant Profile Permissions to this skill"
           )
           .withAskForPermissionsConsentCard(["alexa::profile:email:read"]) // https://developer.amazon.com/en-US/docs/alexa/custom-skills/request-customer-contact-information-for-use-in-your-skill.html#sample-response-with-permissions-card
           .getResponse();
