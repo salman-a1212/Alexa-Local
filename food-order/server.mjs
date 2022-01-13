@@ -230,7 +230,7 @@ const PlaceOrderIntentHandler = {
       }
       return handlerInput.responseBuilder
         .speak(
-          `Dear ${name}, You order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`
+          `Dear ${name}, Your order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`
         )
         .getResponse();
     } catch (error) {
