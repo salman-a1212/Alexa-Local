@@ -16,10 +16,14 @@ const Usage = mongoose.model("Usage", {
 });
 
 const Cart = mongoose.model("Cart", {
-  clientName: String,
-  clientEmail: String,
-  dishName: String,
-  qty: Number,
+  items: [
+    {
+      dishName: String,
+      quantity: Number,
+    },
+  ],
+  email: String,
+  customerName: String,
   createdOn: { type: Date, default: Date.now },
 });
 
@@ -188,6 +192,24 @@ const PlaceOrderIntentHandler = {
     console.log("dishName: ", dishName);
     console.log("qty: ", qty);
 
+    if (!dishName) {
+      const cardText =
+        "1. Beef kabab \n2. Mutton kabab \n3. Chicken Reshmi kabab \n4. Gola kabab \n5. Seekh kabab.";
+
+      return handlerInput.responseBuilder
+        .speak(`please tell me dish name. or you can ask for the menu.`)
+        .reprompt(`please tell me dish name. or you can ask for the menu.`)
+        .withSimpleCard("Our Menu", cardText)
+        .getResponse();
+    }
+    if (!qty) {
+      return handlerInput.responseBuilder
+        .speak(`how many ${dishName} would you like to order?`)
+        .reprompt(`how many ${dishName} would you like to order?`)
+        .withSimpleCard("Placing order", `how many ${dishName}?`)
+        .getResponse();
+    }
+
     const { serviceClientFactory, responseBuilder } = handlerInput;
 
     const apiAccessToken = Alexa.getApiAccessToken(
@@ -212,12 +234,12 @@ const PlaceOrderIntentHandler = {
       const email = responseArray[0].data;
       const name = responseArray[1].data;
 
-      var newOrder = new Cart({
-        clientName: name,
-        clientEmail: email,
-        dishName: dishName,
-        qty: qty,
-      }).save();
+      // var newOrder = new Cart({
+      //   clientName: name,
+      //   clientEmail: email,
+      //   dishName: dishName,
+      //   qty: qty,
+      // }).save();
 
       console.log("email: ", email);
 
@@ -228,11 +250,38 @@ const PlaceOrderIntentHandler = {
           )
           .getResponse();
       }
-      return handlerInput.responseBuilder
-        .speak(
-          `Dear ${name}, Your order of ${qty} ${dishName} have been placed. The expected delivery time is usually within an hour`
-        )
-        .getResponse();
+      try {
+        let updated = await Cart.findOneAndUpdate(
+          { email: email },
+          {
+            email: email,
+            customerName: name,
+            $push: {
+              items: [
+                {
+                  dishName: dishName,
+                  quantity: qty,
+                },
+              ],
+            },
+          },
+          { upsert: true }
+        ).exec();
+
+        console.log("added to cart: ", updated);
+        return handlerInput.responseBuilder
+          .speak(
+            `Dear ${name}, ${qty} ${dishName} is added in your cart, 
+               feel free to add more dishes
+               or say checkout to complete your order`
+          )
+          .getResponse();
+      } catch (err) {
+        console.log("error in db: ", err);
+        return handlerInput.responseBuilder
+          .speak(`something went wrong in db operation`)
+          .getResponse();
+      }
     } catch (error) {
       console.log("error code: ", error.response.status);
 
